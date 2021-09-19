@@ -1,4 +1,5 @@
 Simple Snake game created on Vue with completed game cycle.
+
 Todo List:
 - Difficulty levels
 - Score
