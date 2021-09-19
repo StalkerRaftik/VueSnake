@@ -1,24 +1,2 @@
-# snake
-
-## Project setup
-```
-npm install
-```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+Simple Snake game realization based on Vue!
+[bandicam 2021-09-19 12-13-28-871](https://user-images.githubusercontent.com/24423216/133913236-4e67843c-4586-4579-b3b0-e7ecabd424ad.gif)
