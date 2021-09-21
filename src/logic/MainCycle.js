@@ -29,7 +29,7 @@ export class MainCycle {
         if (cell.x < 0) {
             cell.x = w-1
         }
-        if (cell.y > h) {
+        if (cell.y >= h) {
             cell.y = 0
         }
         if (cell.y < 0) {

@@ -16,17 +16,12 @@ export default {
     settings.xCells = settings.width / settings.cellSize
     settings.yCells = settings.height / settings.cellSize
 
-    let enums = this.getCellEnums
     let map = this.getMap
     for (let i = 0; i < settings.xCells; i++) {
       map[i] = []
-      for (let j = 0; j < settings.yCells; j++) {
-        map[i][j] = enums.NOTHING
-      }
     }
 
     this.updateSettings(settings)
-    //console.log(this.getSettings)
   },
   methods: mapActions(['updateSettings', 'updateMap']),
   computed: mapGetters(['getSettings', 'getMap', 'getCellEnums']),
