@@ -15,7 +15,7 @@ export default {
         newDirection: new Vector(1,0),
         moveDirection: new Vector(1, 0),
         score: 0,
-        snakeQuery: [
+        snakeQueue: [
             new Vector(1, 3),
         ]
     },

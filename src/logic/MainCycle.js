@@ -12,7 +12,7 @@ export class MainCycle {
 
     isPlayerAteFood(ply) {
         let foodPos = store.getters.getFood
-        if (ply.snakeQuery[0].equals(foodPos)) {
+        if (ply.snakeQueue[0].equals(foodPos)) {
             return true
         }
         return false
@@ -43,26 +43,38 @@ export class MainCycle {
 
     checkGameoverCondition() {
         let ply = store.getters.getPlayer
-        let firstCell = ply.snakeQuery[0]
-        for (let i = 1; i < ply.snakeQuery.length-1; i++) {
-            if (firstCell.equals(ply.snakeQuery[i])) {
+        let firstCell = ply.snakeQueue[0]
+        for (let i = 1; i < ply.snakeQueue.length-1; i++) {
+            if (firstCell.equals(ply.snakeQueue[i])) {
                 this.setGameOver()
             }
         }
     }
 
-    SetRandomPos(object) {
+    SetRandomPos(vector, ignoreCollisions = true) {
         let settings = store.getters.getSettings
         let w = settings.xCells
         let h = settings.yCells
 
-        object.x = Math.round(Math.random() * (w-1))
-        object.y = Math.round(Math.random() * (h-1))
+        vector.x = Math.round(Math.random() * (w-1))
+        vector.y = Math.round(Math.random() * (h-1))
+
+        if (!ignoreCollisions) {
+            console.log("Вычисляемс")
+            let snakeQueue = store.getters.getPlayer.snakeQueue
+            let collision = snakeQueue.filter( other => vector.equals(other) )
+            while (collision.length != 0) {
+                vector.x = Math.round(Math.random() * (w-1))
+                vector.y = Math.round(Math.random() * (h-1))
+                collision = snakeQueue.filter( other => vector.equals(other) )
+                console.log(collision)
+            }
+        }
     }
 
     GenerateNewFood() {
         let food = store.getters.getFood
-        this.SetRandomPos(food)
+        this.SetRandomPos(food, false)
         store.commit('updateFood', food)
     }
 
@@ -71,13 +83,13 @@ export class MainCycle {
 
         ply.moveDirection = ply.newDirection
 
-        let lastCellClone = ply.snakeQuery[ply.snakeQuery.length-1].clone()
-        let lastCell = ply.snakeQuery[ply.snakeQuery.length-1]
-        let firstCell = ply.snakeQuery[0]
+        let lastCellClone = ply.snakeQueue[ply.snakeQueue.length-1].clone()
+        let lastCell = ply.snakeQueue[ply.snakeQueue.length-1]
+        let firstCell = ply.snakeQueue[0]
         if (!this.isPlayerAteFood(ply)) {
-            ply.snakeQuery.length = ply.snakeQuery.length - 1
+            ply.snakeQueue.length = ply.snakeQueue.length - 1
         } else {
-            ply.snakeQuery[ply.snakeQuery.length-1] = lastCellClone
+            ply.snakeQueue[ply.snakeQueue.length-1] = lastCellClone
             this.GenerateNewFood()
         }
 
@@ -87,7 +99,7 @@ export class MainCycle {
         this.checkBorders(lastCell)
 
 
-        ply.snakeQuery.unshift(lastCell)
+        ply.snakeQueue.unshift(lastCell)
     }
 
     ClearMap() {
@@ -102,16 +114,16 @@ export class MainCycle {
         let map = store.getters.getMap
         let enums = store.getters.getCellEnums
 
-        map[ply.snakeQuery[0].x][ply.snakeQuery[0].y] = enums.HEAD
-        for (let i = 1; i < ply.snakeQuery.length; i++) {
-            map[ply.snakeQuery[i].x][ply.snakeQuery[i].y] = enums.TAIL
+        map[ply.snakeQueue[0].x][ply.snakeQueue[0].y] = enums.HEAD
+        for (let i = 1; i < ply.snakeQueue.length; i++) {
+            map[ply.snakeQueue[i].x][ply.snakeQueue[i].y] = enums.TAIL
         }
         Vue.set(store.state, 'map', map)
 
         this.Rerender()
     }
 
-    SyncronizeFood() {
+    SyncronizeFoodWithMap() {
         let food = store.getters.getFood
         let map = store.getters.getMap
         map[food.x][food.y] = store.getters.getCellEnums.FOOD
@@ -120,7 +132,7 @@ export class MainCycle {
 
     SyncronizeMap() {
         this.ClearMap()
-        this.SyncronizeFood()
+        this.SyncronizeFoodWithMap()
         this.SyncronizePlayerWithMap()
     }
 
@@ -132,7 +144,7 @@ export class MainCycle {
         store.commit('updateFood', food)
         console.log(store.getters.getFood)
 
-        this.SetRandomPos(ply.snakeQuery[0])
+        this.SetRandomPos(ply.snakeQueue[0])
         store.commit('updatePlayer', ply)
     }
 
@@ -142,7 +154,7 @@ export class MainCycle {
             this.PlayerMove()
             this.SyncronizeMap()
             this.checkGameoverCondition()
-        }, 500)
+        }, 200)
     }
 
 }

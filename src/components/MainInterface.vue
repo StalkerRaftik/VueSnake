@@ -26,7 +26,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['snakeQuery']),
+    ...mapState(['snakeQueue']),
     ...mapGetters(['getMap']),
     cssProps() {
       return {
